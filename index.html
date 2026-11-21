@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#14532d">
+<title>SONBOIR AGRI PRO - Professional Store Manager V2</title>
+<link rel="stylesheet" href="assets/css/style.css">
+
+</head>
+<body data-theme="light">
+<header>
+  <div class="header-left">
+    <button class="icon-btn" aria-label="Open menu" onclick="toggleDrawer()">☰</button>
+    <div class="brand-lockup"><div class="brand-mark" aria-label="SONBOIR logo"><span>SA</span><i>✦</i></div><div><div class="brand-title">SONBOIR <b>AGRI PRO</b></div><div class="brand-sub">SMART AGRI STORE MANAGEMENT</div></div></div>
+  </div>
+  <div class="header-actions">
+    <button class="icon-btn" aria-label="Search" onclick="goTo('home');$('homeQ').focus()">⌕</button>
+    <button class="icon-btn" aria-label="Notifications" onclick="showNotifications()">♧</button>
+    <button class="icon-btn" aria-label="Profile" onclick="goTo('settings')">◉</button>
+  </div>
+</header>
+<div class="drawer-backdrop" onclick="closeDrawer()"></div>
+<aside class="drawer" aria-label="Main navigation">
+  <div class="drawer-profile"><div class="avatar">SA</div><div><div class="drawer-name">Store Admin</div><div class="drawer-role">Administrator · Local Store</div></div></div>
+  <div class="drawer-scroll">
+    <div class="drawer-label">Main Menu</div>
+    <button class="drawer-item active" data-go="home"><span class="ico">⌂</span>Dashboard</button>
+    <button class="drawer-item" data-go="products"><span class="ico">▣</span>Product Master</button>
+    <button class="drawer-item" data-go="starred"><span class="ico">🌟</span>Starred / Bookmarks</button>
+    <button class="drawer-item" data-go="companies"><span class="ico">▦</span>Company & Brand Master</button>
+    <button class="drawer-item" data-go="packing"><span class="ico">▧</span>Packing Master</button>
+    <button class="drawer-item" data-go="stock"><span class="ico">▤</span>Stock Management</button>
+    <button class="drawer-item" data-go="billing"><span class="ico">▤</span>Sales / Billing</button>
+    <button class="drawer-item" data-go="purchase"><span class="ico">🛒</span>Purchase</button>
+    <button class="drawer-item" data-go="ledger"><span class="ico">♙</span>Customers</button>
+    <button class="drawer-item" data-go="suppliers"><span class="ico">🚚</span>Suppliers</button>
+    <button class="drawer-item" data-go="reports"><span class="ico">▥</span>Reports</button>
+    <div class="drawer-label">Tools & Settings</div>
+    <button class="drawer-item" data-go="search"><span class="ico">⌕</span>Smart Search</button>
+    <button class="drawer-item" data-go="compare"><span class="ico">⇄</span>Multi-Brand View</button>
+    <button class="drawer-item" data-go="notes"><span class="ico">▤</span>Notes System</button>
+    <button class="drawer-item" data-go="chem"><span class="ico">⚗</span>Chemical Master (227)</button>
+    <button class="drawer-item" data-go="backup"><span class="ico">⇧</span>Backup / Data</button>
+    <button class="drawer-item" data-go="settings"><span class="ico">⚙</span>Settings</button>
+    <button class="drawer-item" data-go="help"><span class="ico">ⓘ</span>Help</button>
+  </div>
+  <div class="drawer-foot"><button class="drawer-item" onclick="closeDrawer();toggleTheme()"><span class="ico">◐</span>Change Theme</button></div>
+</aside>
+
+<main>
+<section id="home" class="view">
+  <div class="dashboard-search"><span style="font-size:23px;color:#14532d">⌕</span><input id="homeQ" placeholder="Search products, company, technical name..." oninput="renderHome()"><button class="secondary" onclick="goTo('products');$('prodSort').focus()">↕ Sort</button><button class="secondary" onclick="goTo('products');$('prodCatFilter').focus()">☷ Filter</button></div><div class="panel" style="padding:9px 12px;margin-top:-8px"><input id="barcodeSearch" class="search" placeholder="▦ Barcode / SKU स्कैन या टाइप करें और Enter दबाएँ" onkeydown="if(event.key==='Enter')findByBarcode()"></div>
+  <div class="quick-chips" id="homeChips">
+    <button class="quick-chip active" data-homecat="">All</button>
+    <button class="quick-chip" data-homecat="Insecticide">Insecticide</button>
+    <button class="quick-chip" data-homecat="Fungicide">Fungicide</button>
+    <button class="quick-chip" data-homecat="Herbicide">Herbicide</button>
+    <button class="quick-chip" data-homecat="PGR">PGR</button>
+    <button class="quick-chip" data-homecat="__stock">In-stock</button>
+    <button class="quick-chip" data-homecat="__out">Out stock</button><button class="quick-chip" data-homecat="__starred">⭐ Starred</button>
+  </div>
+  <div class="page-head"><div><h2>Dashboard</h2><p>आपकी दुकान का आज का Store Overview</p></div><button onclick="openProduct()">＋ Add Product</button></div>
+  <div class="stats">
+    <div class="stat"><b id="dashProducts">0</b><span>Total Products</span></div>
+    <div class="stat"><b id="dashCompanies">0</b><span>Companies</span></div>
+    <div class="stat"><b id="dashStock">0</b><span>Total Stock Qty</span></div>
+    <div class="stat"><b id="dashLow">0</b><span>Out of Stock</span></div>
+    <div class="stat"><b id="dashSales">₹0</b><span>Total Sales</span></div>
+    <div class="stat"><b id="dashTech">0</b><span>Used Technical Names</span></div>
+    <div class="stat"><b id="dashPacks">0</b><span>Total Packings</span></div>
+    <div class="stat"><b id="dashRecent">0</b><span>Recently Viewed</span></div>
+  </div>
+  <div class="calc-box"><div class="section-kicker">Quick Price Calculator</div><div class="row"><div><label>प्रति पैक कीमत ₹</label><input id="quickPrice" type="number" min="0" step=".01" value="0" oninput="updateQuickCalc()"></div><div><label>Quantity</label><input id="quickQty" type="number" min="1" value="1" oninput="updateQuickCalc()"></div><div><label>Discount ₹</label><input id="quickDiscount" type="number" min="0" value="0" oninput="updateQuickCalc()"></div></div><b id="quickTotal" style="display:block;margin-top:8px;color:#087443;font-size:19px">कुल: ₹0.00</b></div>
+  <div class="page-head"><div><h2>फसल के अनुसार Products</h2><p>धान, गेहूँ और अन्य फसलों के लिए दर्ज किए गए Products</p></div></div><div class="quick-chips"><button class="quick-chip" onclick="showSeasonal('धान')">धान</button><button class="quick-chip" onclick="showSeasonal('गेहूँ')">गेहूँ</button><button class="quick-chip" onclick="showSeasonal('मक्का')">मक्का</button><button class="quick-chip" onclick="showSeasonal('सोयाबीन')">सोयाबीन</button><button class="quick-chip" onclick="showSeasonal('चना')">चना</button><button class="quick-chip" onclick="showSeasonal('सभी')">सभी</button></div><div id="seasonalResults" class="grid"></div>
+  <div class="page-head"><div><h2>हाल ही में देखे गए <span class="recent-count" id="recentCount">0</span></h2><p>आपके हाल के Products · अधिकतम 10</p></div><div class="row recent-actions"><button class="secondary" onclick="goTo('products')">सभी Products</button><button class="secondary" onclick="clearRecentProducts()">History Clear</button></div></div><div id="recentResults" class="recent-strip"></div>
+  <div class="page-head"><div><h2>Product, Company & Packing Master</h2><p>स्टोर में दर्ज Products और उनकी उपलब्धता</p></div><button class="secondary" onclick="goTo('companies')">Company Summary</button></div>
+  <div id="homeResults" class="grid"></div>
+</section>
+
+<section id="companies" class="view hide">
+  <div class="page-head"><div><h2>Company & Brand Master</h2><p>कंपनी सूची, उनके ब्रांड और स्टॉक का सारांश</p></div><button onclick="openProduct()">＋ Add Brand</button></div>
+  <div class="panel"><input id="companyQ" class="search" placeholder="कंपनी / Product / Technical Name खोजें..." oninput="renderCompanies()"><div class="filterbar"><select id="companyCategoryFilter" onchange="renderCompanies()"><option value="">सभी Product Categories</option><option>Insecticide</option><option>Fungicide</option><option>Herbicide</option><option>Insecticide / Acaricide</option><option>PGR</option><option>Botanical / Neem</option><option>Fumigant</option><option>Other</option></select><select id="companyTechFilter" onchange="renderCompanies()"><option value="">सभी Technical Names</option></select><select id="companySort" onchange="renderCompanies()"><option value="az">Company A–Z</option><option value="za">Company Z–A</option><option value="products">सबसे अधिक Products</option><option value="technical">Technical Names</option></select></div><div class="muted" id="companyFilterCount"></div><div id="companyResults" class="module-grid" style="margin-top:12px"></div></div>
+</section>
+<section id="packing" class="view hide">
+  <div class="page-head"><div><h2>Packing Master</h2><p>सभी Products की पैकिंग, MRP, खरीद और बिक्री भाव</p></div><button class="secondary" onclick="exportStoreExcel()">Export CSV</button></div>
+  <div class="panel"><input id="packingQ" class="search" placeholder="Product / Packing खोजें..." oninput="renderPacking()"><div id="packingResults" class="table-wrap" style="margin-top:12px"></div></div>
+</section>
+<section id="stock" class="view hide">
+  <div class="page-head"><div><h2>Stock Management</h2><p>मौजूदा स्टॉक देखें और मात्रा अपडेट करें</p></div><button class="secondary" onclick="goTo('purchase')">＋ Stock In</button></div>
+  <div class="panel"><input id="stockQ" class="search" placeholder="Product / Company / Packing खोजें..." oninput="renderStock()"><div id="stockResults" class="table-wrap" style="margin-top:12px"></div></div>
+</section>
+<section id="billing" class="view hide">
+  <div class="page-head"><div><h2>Sales / Billing</h2><p>बिक्री दर्ज करें; स्टॉक घटेगा और ग्राहक खाते में लेनदेन जुड़ेगा</p></div></div>
+  <div class="panel">
+    <div class="inline-form">
+      <div class="span2"><label>Product / Packing</label><select id="salePack"></select></div>
+      <div><label>Quantity</label><input id="saleQty" type="number" min="1" value="1"></div>
+      <div><label>Payment</label><select id="salePayment"><option value="Cash">Cash</option><option value="Credit">उधार</option></select></div>
+      <div><label>Customer Name</label><input id="saleCustomer" list="customerList" placeholder="Walk-in / किसान"></div>
+      <div><label>Mobile</label><input id="salePhone" placeholder="मोबाइल"></div>
+      <div><label>Sale Price / Unit ₹</label><input id="salePrice" type="number" min="0" step=".01"></div>
+      <div><label>Discount ₹</label><input id="saleDiscount" type="number" min="0" step=".01" value="0"></div>
+    </div>
+    <datalist id="customerList"></datalist>
+    <div class="row" style="margin-top:12px"><div class="notice" id="saleEstimate">कुल बिल: ₹0.00</div><button onclick="completeSale()">Complete Sale</button></div>
+  </div>
+  <div class="panel"><h3>Recent Sales</h3><div id="salesResults" class="table-wrap"></div></div>
+</section>
+<section id="purchase" class="view hide">
+  <div class="page-head"><div><h2>Purchase / Stock In</h2><p>Supplier से माल खरीदें और स्टॉक में जोड़ें</p></div></div>
+  <div class="panel">
+    <div class="inline-form">
+      <div class="span2"><label>Product / Packing</label><select id="purchasePack"></select></div>
+      <div><label>Quantity</label><input id="purchaseQty" type="number" min="1" value="1"></div>
+      <div><label>Purchase Price / Unit ₹</label><input id="purchasePrice" type="number" min="0" step=".01"></div>
+      <div><label>Supplier</label><input id="purchaseSupplier" list="supplierList" placeholder="Supplier name"></div>
+      <div><label>Bill / Invoice No.</label><input id="purchaseBill" placeholder="Invoice no."></div>
+      <div class="span2"><button onclick="completePurchase()">Save Purchase & Add Stock</button></div>
+    </div>
+    <datalist id="supplierList"></datalist>
+  </div>
+  <div class="panel"><h3>Purchase History</h3><div id="purchaseResults" class="table-wrap"></div></div>
+</section>
+<section id="suppliers" class="view hide">
+  <div class="page-head"><div><h2>Suppliers</h2><p>अपने वितरकों / सप्लायर का रिकॉर्ड रखें</p></div></div>
+  <div class="panel"><div class="inline-form"><div><label>Supplier Name</label><input id="supplierName" placeholder="नाम"></div><div><label>Mobile</label><input id="supplierMobile" placeholder="मोबाइल"></div><div class="span2"><label>Address / Note</label><input id="supplierAddress" placeholder="पता / विवरण"></div><div><button onclick="addSupplier()">Save Supplier</button></div></div></div>
+  <div id="supplierResults" class="module-grid"></div>
+</section>
+<section id="reports" class="view hide">
+  <div class="page-head"><div><h2>Reports & Analytics</h2><p>Sales, Purchase, Stock और Margin का सारांश</p></div><button class="secondary" onclick="exportStoreExcel()">Export Inventory</button></div>
+  <div id="reportStats" class="stats"></div><div class="panel"><h3>Company-wise Stock</h3><div id="reportCompanies" class="module-grid"></div></div>
+  <div class="panel"><h3>Recent Transactions</h3><div id="reportTransactions" class="table-wrap"></div></div>
+</section>
+<section id="settings" class="view hide">
+  <div class="page-head"><div><h2>Settings & Data Center</h2><p>Appearance, language, backup, import और export को एक जगह से नियंत्रित करें</p></div><span class="data-status-pill">● Offline · Data on this device</span></div>
+  <div class="settings-overview">
+    <div class="settings-overview-head"><div><span class="section-kicker">STORE DATA OVERVIEW</span><h3>आपका डेटा सुरक्षित रखें</h3><p>नियमित Full Backup बनाएं। नया फोन या ब्राउज़र बदलने पर JSON Backup से डेटा वापस ला सकते हैं।</p></div><div class="backup-emblem">↥</div></div>
+    <div class="data-count-grid">
+      <div><b id="dataProductCount">0</b><span>Products</span></div><div><b id="dataCompanyCount">0</b><span>Companies</span></div><div><b id="dataPackCount">0</b><span>Packings</span></div><div><b id="dataCustomerCount">0</b><span>Customers</span></div><div><b id="dataSalesCount">0</b><span>Sales Bills</span></div><div><b id="dataTechCount">227</b><span>Technical Names</span></div>
+    </div>
+  </div>
+  <div class="settings-layout">
+    <div class="module-card settings-card"><div class="settings-card-title"><span class="settings-icon">🎨</span><div><h3>Appearance</h3><p>सॉफ्टवेयर का लुक बदलें</p></div></div><label for="themeSetting">Color Theme</label><select id="themeSetting" onchange="setTheme(this.value)"><option value="light">☀️ Light Theme</option><option value="dark">🌙 Dark Theme</option></select><label for="languageSetting">Interface Language</label><select id="languageSetting" onchange="setLanguage(this.value)"><option value="hi">हिन्दी (Hindi)</option><option value="en">English</option></select></div>
+    <div class="module-card settings-card"><div class="settings-card-title"><span class="settings-icon">🛡️</span><div><h3>Full Backup & Restore</h3><p>सभी जरूरी रिकॉर्ड एक फाइल में</p></div></div><div class="data-feature-list"><span>✓ Products और Packing Rates</span><span>✓ Customers, Suppliers और Ledger</span><span>✓ Sales, Purchase और Notes</span><span>✓ Custom Technical Names</span></div><button class="settings-primary-btn" onclick="backupData()">⬇ Download Full JSON Backup</button><label class="settings-upload-btn">⬆ Restore JSON Backup<input type="file" accept=".json,application/json" onchange="restoreData(event)"></label><small class="muted">Restore करने पर मौजूदा डेटा बदल जाएगा। Import से पहले सुरक्षा Backup अपने आप डाउनलोड होगा।</small></div>
+    <div class="module-card settings-card"><div class="settings-card-title"><span class="settings-icon">📥</span><div><h3>Import Data</h3><p>Excel/CSV से रिकॉर्ड जोड़ें या अपडेट करें</p></div></div><label class="settings-upload-btn">Import Products CSV<input type="file" accept=".csv,text/csv" onchange="importProductsCSV(event)"></label><label class="settings-upload-btn">Import Technical Master CSV<input type="file" accept=".csv,text/csv" onchange="importChemicalsCSV(event)"></label><small class="muted">Product CSV matching Product + Company + Technical Name से merge/update होगा। Technical CSV custom master में नए नाम जोड़ेगा।</small></div>
+    <div class="module-card settings-card"><div class="settings-card-title"><span class="settings-icon">📤</span><div><h3>Export Data</h3><p>जिस रिकॉर्ड की जरूरत हो, वही डाउनलोड करें</p></div></div><div class="export-grid"><button class="export-option" onclick="exportStoreExcel()"><b>▤ Products CSV</b><small>Products और सभी packings</small></button><button class="export-option" onclick="exportChemCSV()"><b>⚗ Technical CSV</b><small>Technical Master सूची</small></button><button class="export-option" onclick="exportDatasetCSV('sales')"><b>₹ Sales CSV</b><small>बिक्री रिकॉर्ड</small></button><button class="export-option" onclick="exportDatasetCSV('purchases')"><b>🛒 Purchase CSV</b><small>खरीद रिकॉर्ड</small></button><button class="export-option" onclick="exportDatasetCSV('customers')"><b>♙ Customers CSV</b><small>ग्राहक सूची</small></button><button class="export-option" onclick="exportDatasetCSV('suppliers')"><b>🚚 Suppliers CSV</b><small>Supplier सूची</small></button></div></div>
+  </div>
+  <div class="notice settings-note">महत्वपूर्ण: यह Offline Single-Device Software है। डेटा इसी ब्राउज़र के Local Storage में रहता है। Browser Data Clear करने से पहले Full JSON Backup जरूर डाउनलोड करें।</div>
+</section>
+<section id="help" class="view hide">
+  <div class="page-head"><div><h2>Help & User Guide</h2><p>मुख्य सुविधाओं का उपयोग कैसे करें</p></div></div>
+  <div class="panel"><h3>शुरुआत कैसे करें?</h3><ol><li>Product Master में Product, Company, Technical Name और Packings दर्ज करें।</li><li>Purchase में खरीदी दर्ज करने पर Stock अपने आप बढ़ेगा।</li><li>Sales / Billing में बिक्री दर्ज करने पर Stock घटेगा।</li><li>Customers में उधार और भुगतान का Ledger देखें।</li><li>Reports में बिक्री, खरीद और स्टॉक का सारांश देखें।</li><li>Backup नियमित रूप से डाउनलोड करके सुरक्षित रखें।</li></ol><div class="notice">यह Offline Single-Device Software है। डेटा इसी ब्राउज़र / डिवाइस के Local Storage में सेव होता है।</div></div>
+</section>
+
+
+<div class="stats" style="display:none">
+  <div class="stat"><b id="chemCount">227</b><span>Chemical Master</span></div>
+  <div class="stat"><b id="prodCount">0</b><span>हमारे Products</span></div>
+  <div class="stat"><b id="packCount">0</b><span>Total Packings</span></div>
+  <div class="stat"><b id="custCount">0</b><span>Total Customers</span></div>
+  <div class="stat"><b id="noteCount">0</b><span>Total Notes</span></div>
+</div>
+
+<nav>
+  <button class="tab active" data-tab="search">Smart Search</button>
+  <button class="tab secondary" data-tab="products">Product & Inventory</button>
+  <button class="tab secondary" data-tab="compare">Multi-Brand View</button>
+  <button class="tab secondary" data-tab="ledger">Ledger & GST</button>
+  <button class="tab secondary" data-tab="notes">Notes System</button>
+  <button class="tab secondary" data-tab="chem">Chemical Master (227)</button>
+  <button class="tab secondary" data-tab="backup">Backup / Data</button>
+</nav>
+
+<!-- 1. SMART SEARCH TAB -->
+<section id="search" class="view">
+<div class="panel">
+  <h2>🔎 Universal Smart Search</h2>
+  <p class="muted">फसल (जैसे धान), बीमारी/कीट (जैसे ब्लास्ट, तना छेदक), Technical Name, कंपनी या ब्रांड का नाम लिखें।</p>
+  <input id="q" class="search" placeholder="यहाँ लिखें (जैसे: धान ब्लास्ट / imidacloprid / Bayer / UPL)..." oninput="renderSearch()">
+  <div class="row" style="margin-top:10px">
+    <select id="catFilter" onchange="renderSearch()"><option value="">सभी श्रेणियाँ</option></select>
+    <select id="searchMode" onchange="renderSearch()">
+      <option value="all">सभी जानकारी में खोजें</option>
+      <option value="crop">फसल के अनुसार</option>
+      <option value="target">बीमारी / कीट के अनुसार</option>
+      <option value="technical">Technical Name के अनुसार</option>
+      <option value="product">मेरे Product / Brand के अनुसार</option>
+    </select>
+  </div>
+</div>
+<div class="muted" id="searchCount" style="margin:10px 2px"></div><div id="searchResults" class="grid"></div>
+</section>
+
+<!-- 2. PRODUCTS & INVENTORY TAB -->
+<section id="products" class="view hide">
+<div class="panel">
+  <div class="row">
+    <div><h2>Product, Company & Packing Master</h2><span class="muted">227 टेक्निकल मास्टर से चुनें, कंपनी/ब्रांड जोड़ें और पैकिंग-मार्जिन सेट करें</span></div>
+    <div class="row" style="flex:0 0 auto;gap:7px"><button class="secondary" onclick="openCompanySummary()">🏢 Company Summary</button><button onclick="openProduct()">+ Add Product</button></div>
+  </div>
+  <input id="prodQ" class="search" placeholder="Product / Company / Technical खोजें..." style="margin-top:10px" oninput="renderProducts()">
+  <div class="filterbar" style="margin-top:8px">
+    <select id="prodCompanyFilter" onchange="renderProducts()"><option value="">सभी कंपनियाँ</option></select>
+    <select id="prodTechFilter" onchange="renderProducts()"><option value="">सभी Technical Names</option></select>
+    <select id="prodSort" onchange="renderProducts()"><option value="new">नए पहले</option><option value="name">नाम A–Z</option><option value="nameDesc">नाम Z–A</option><option value="company">Company A–Z</option><option value="technical">Technical A–Z</option><option value="stockHigh">Stock अधिक पहले</option><option value="stockLow">Stock कम पहले</option></select>
+  </div>
+  <div class="muted" id="productFilterCount" style="margin-top:7px">0 / 0 Products</div>
+  <div class="filterbar">
+    <select id="prodCatFilter" onchange="renderProducts()"><option value="">सभी Product श्रेणियाँ</option><option>Insecticide</option><option>Fungicide</option><option>Herbicide</option><option>Insecticide / Acaricide</option><option>PGR</option><option>Botanical / Neem</option><option>Fumigant</option><option>Other</option></select>
+    <select id="prodStockFilter" onchange="renderProducts()"><option value="">सभी Stock</option><option value="available">स्टॉक उपलब्ध</option><option value="out">स्टॉक समाप्त</option><option value="starred">⭐ Starred</option></select>
+  </div>
+  <div id="productResults" class="grid" style="margin-top:12px"></div>
+</div>
+</section>
+
+<section id="starred" class="view hide">
+  <div id="starFeedback" class="muted" aria-live="polite"></div><div class="page-head"><div><h2>🌟 Starred / Bookmarked Products</h2><p>आपके पसंदीदा और जरूरी Products एक जगह</p></div><button class="secondary" onclick="goTo('products')">All Products</button></div>
+  <div class="panel">
+    <input id="starQ" class="search" placeholder="Starred Product / Company / Technical खोजें..." oninput="renderStarred()">
+    <div class="filterbar">
+      <select id="starCat" onchange="renderStarred()"><option value="">सभी Categories</option><option>Insecticide</option><option>Fungicide</option><option>Herbicide</option><option>Insecticide / Acaricide</option><option>PGR</option><option>Botanical / Neem</option><option>Fumigant</option><option>Other</option></select>
+      <select id="starSort" onchange="renderStarred()"><option value="name">नाम A–Z</option><option value="za">नाम Z–A</option><option value="stock">अधिक Stock पहले</option><option value="price">कम बिक्री भाव पहले</option></select>
+    </div>
+    <div id="starResults" class="grid" style="margin-top:12px"></div>
+  </div>
+</section>
+
+<!-- 3. MULTI-BRAND COMPARISON TAB -->
+<section id="compare" class="view hide">
+<div class="panel">
+  <h2>⚖️ Multi-Brand Technical Comparison</h2>
+  <p class="muted">एक ही टेक्निकल नाम (Chemical) पर उपलब्ध विभिन्न कंपनियों के ब्रांड्स, भाव और स्टॉक की तुलना करें।</p>
+  <select id="compareTech" class="search" style="margin-top:8px" onchange="renderCompareView()"><option value="">-- Technical चुनें --</option></select>
+  <div id="compareResults" class="grid" style="margin-top:12px"></div>
+</div>
+</section>
+
+<!-- 4. LEDGER & ACCOUNTING TAB -->
+<section id="ledger" class="view hide">
+<div class="panel">
+  <div class="row">
+    <div><h2>Customer Ledger & Accounting (GST / Debit-Credit)</h2><span class="muted">किसान/ग्राहक खाते, उधार/नकद लेन-देन और डेबिट-क्रेडिट रिकॉर्ड</span></div>
+    <button onclick="openCustomerModal()">+ Add Customer / Transaction</button>
+  </div>
+  <input id="custQ" class="search" placeholder="ग्राहक का नाम या मोबाइल नंबर खोजें..." style="margin-top:10px" oninput="renderLedger()">
+  <div class="filterbar"><select id="ledgerBalanceFilter" onchange="renderLedger()"><option value="">सभी खाते</option><option value="due">उधार बाकी</option><option value="clear">कोई बकाया नहीं</option></select></div>
+  <div id="ledgerResults" class="grid" style="margin-top:12px"></div>
+</div>
+</section>
+
+<!-- 5. NOTES SYSTEM TAB -->
+<section id="notes" class="view hide">
+<div class="panel">
+  <div class="row">
+    <div><h2>Tri-State Notes System</h2><span class="muted">Personal Notes, Product Notes और Customer Notes अलग-अलग प्रबंधित करें</span></div>
+    <button onclick="openNoteModal()">+ Add New Note</button>
+  </div>
+  <div class="row" style="margin-top:10px">
+    <select id="noteTypeFilter" onchange="renderNotes()">
+      <option value="">सभी Notes</option>
+      <option value="Personal">Personal Notes</option>
+      <option value="Product">Product Notes</option>
+      <option value="Customer">Customer Notes</option>
+    </select>
+    <input id="noteQ" class="search" placeholder="Notes में खोजें..." oninput="renderNotes()">
+  </div>
+  <div id="notesResults" class="grid" style="margin-top:12px"></div>
+</div>
+</section>
+
+<!-- 6. CHEMICAL MASTER TAB -->
+<section id="chem" class="view hide">
+<div class="panel">
+  <div class="row">
+    <div><h2>Chemical Master (227 Entries)</h2><span class="muted">Excel Master: 227 entries · हर entry में Target, Crop, Timing और Safety Reference</span></div>
+    <button onclick="exportChemCSV()">Export CSV</button>
+  </div>
+  <input id="chemQ" class="search" placeholder="Chemical / Category / Target खोजें..." style="margin-top:10px" oninput="renderChem()">
+  <div class="filterbar"><select id="chemCatFilter" onchange="renderChem()"><option value="">सभी श्रेणियाँ</option></select><select id="chemSort" onchange="renderChem()"><option value="az">Technical A–Z</option><option value="za">Technical Z–A</option><option value="master">Master क्रम</option></select></div><div class="muted" id="chemFilterCount"></div>
+  <div id="chemResults" class="grid" style="margin-top:12px"></div>
+<div class="chem-add-box"><h3>＋ Add New Technical Chemical</h3>
+<p class="muted">नया टेक्निकल / फॉर्मूलेशन अपने Chemical Master में जोड़ें।</p>
+<div class="inline-form">
+<div class="span2"><label>Technical / Formulation Name</label><input id="newChemName"></div>
+<div><label>Category</label><select id="newChemCat"><option>Insecticide</option><option>Fungicide</option><option>Herbicide</option><option>Insecticide / Acaricide</option><option>PGR</option><option>Botanical / Neem</option><option>Fumigant</option><option>Other</option></select></div>
+<div><label>Target / Utility</label><input id="newChemTarget"></div><div><label>Crop</label><input id="newChemCrops"></div>
+<div><label>Timing / Stage</label><input id="newChemTiming"></div><div class="span2"><label>Safety / Label Note</label><input id="newChemCaution"></div>
+</div><button style="margin-top:10px" onclick="addCustomChemical()">＋ Save Technical Chemical</button></div>
+</div>
+</section>
+
+<!-- 7. BACKUP & DATA TAB -->
+<section id="backup" class="view hide">
+<div class="panel">
+  <h2>Backup & Restore / Export</h2>
+  <p class="muted">अपने सभी प्रोडक्ट्स, कस्टमर्स और नोट्स का बैकअप अपने डिवाइस में सुरक्षित रखें।</p>
+  <div class="row">
+    <button onclick="backupData()">Download Full Backup (JSON)</button>
+    <label class="btn secondary" style="text-align:center;cursor:pointer">Restore Backup<input id="restoreFile" type="file" accept=".json" style="display:none" onchange="restoreData(event)"></label>
+    <button class="secondary" onclick="exportStoreExcel()">Export Products CSV</button>
+  </div>
+</div>
+</section>
+</main>
+
+<nav class="bottom-nav" id="bottomNav" aria-label="Quick navigation">
+  <button data-bottom="home" class="active"><span class="bottom-icon">⌂</span><small>Home</small></button>
+  <button data-bottom="search"><span class="bottom-icon">⌕</span><small>Search</small></button>
+  <button data-bottom="starred"><span class="bottom-icon">♡</span><small>Saved</small></button>
+  <button data-bottom="billing"><span class="bottom-icon">▣</span><small>Billing</small></button>
+  <button data-bottom="settings"><span class="bottom-icon">◉</span><small>Account</small></button>
+</nav>
+<div class="modal" id="invoiceModal"><div class="dialog"><div id="invoiceContent"></div><div class="row no-print" style="margin-top:14px"><button onclick="window.print()">Print / Save PDF</button><button class="secondary" onclick="$('invoiceModal').classList.remove('open')">Close</button></div></div></div>
+<footer>Developed for SONBOIR AGRI PRO · Offline Single-File Store Manager</footer>
+
+<!-- MODALS -->
+<!-- Product Modal -->
+<div class="modal" id="productModal">
+<div class="dialog">
+  <h2 id="modalTitle">Add Product</h2>
+  <input type="hidden" id="editId">
+  <label>Product / Brand Name (जैसे: Confidor / Regent)</label>
+  <input id="pname" placeholder="Brand name">
+  
+  <label>Company Name (जैसे: Bayer / BASF / UPL / Dhanuka)</label>
+  <input id="company" list="compList" placeholder="Company Name"><datalist id="compList"></datalist>
+  
+  <label>Technical Name (227 Master List में Search + Filter करें)</label>
+  <input id="techPickerSearch" class="search" placeholder="🔎 Technical Name खोजें (जैसे: Imidacloprid, Mancozeb...)" oninput="filterTechnicalOptions()" style="margin-bottom:8px">
+  <div class="filterbar" style="margin-top:0;margin-bottom:8px">
+    <select id="techPickerCategory" onchange="filterTechnicalOptions()">
+      <option value="">सभी Technical Categories</option>
+    </select>
+    <select id="techPickerSort" onchange="filterTechnicalOptions()">
+      <option value="az">नाम A–Z</option>
+      <option value="za">नाम Z–A</option>
+      <option value="master">Master List क्रम</option>
+    </select>
+  </div>
+  <div class="muted" id="techPickerCount" style="margin:0 0 5px">227 Technical Names</div>
+  <select id="technicalSelect" style="margin-bottom:8px" onchange="selectTechnicalOption()">
+    <option value="">-- Search करके Technical Name चुनें --</option>
+  </select>
+  <input id="technical" placeholder="या यहाँ सीधे Technical Name टाइप करें" oninput="syncTechnicalPickerFromText()">
+  
+  <label>Barcode / SKU (वैकल्पिक)</label><input id="pbarcode" placeholder="Barcode नंबर या SKU दर्ज करें">
+  <label>Product Image URL (वैकल्पिक)</label><input id="pimage" placeholder="https://... product image URL">
+  <label>Company Logo URL (वैकल्पिक)</label><input id="plogo" placeholder="https://... company logo URL">
+  <label>Applicable Crops (कॉमा से अलग करें: धान, गेहूँ, मक्का)</label><input id="pcrops" placeholder="धान, गेहूँ, मक्का">
+  <label>Product Usage / Utility Details (फसल, कीट / रोग और उपयोग)</label>
+  <textarea id="putility" rows="3" placeholder="फसल, लक्षित कीट / रोग और उपयोग का विवरण (लेबल के अनुसार)"></textarea>
+  <label>Category</label>
+  <select id="pcat"><option>Insecticide</option><option>Fungicide</option><option>Herbicide</option><option>Insecticide / Acaricide</option><option>PGR</option><option>Botanical / Neem</option><option>Fumigant</option><option>Other</option></select>
+  
+  <h3 style="margin-top:15px">Packing & Price (Margin Calculator)</h3>
+  <div id="packs"></div>
+  <button class="secondary" onclick="addPackRow()">+ Add Packing</button>
+  <div class="row" style="margin-top:16px">
+    <button onclick="saveProduct()">Save Product</button>
+    <button class="secondary" onclick="closeProduct()">Cancel</button>
+  </div>
+</div>
+</div>
+
+<!-- Company Summary Modal -->
+<div class="modal" id="companySummaryModal">
+<div class="dialog">
+  <div class="row" style="align-items:center">
+    <div><h2 style="margin:0">🏢 Company-wise Product Summary</h2><span class="muted">हर कंपनी के दर्ज Products, Packings और कुल Stock</span></div>
+    <button class="secondary" onclick="$('companySummaryModal').classList.remove('open')">✕</button>
+  </div>
+  <div class="row" style="margin-top:12px">
+    <input id="companySummaryQ" class="search" placeholder="कंपनी या Product खोजें..." oninput="renderCompanySummary()">
+    <select id="companySummarySort" onchange="renderCompanySummary()">
+      <option value="count">सबसे अधिक Products</option>
+      <option value="az">कंपनी A–Z</option>
+      <option value="stock">सबसे अधिक Stock</option>
+    </select>
+  </div>
+  <div id="companySummaryStats" class="stats" style="grid-template-columns:repeat(3,1fr);margin-top:12px"></div>
+  <div id="companySummaryResults" style="margin-top:12px"></div>
+</div>
+</div>
+
+<!-- Customer / Ledger Modal -->
+<div class="modal" id="customerModal">
+<div class="dialog">
+  <h2>Add Customer & Transaction</h2>
+  <label>Customer Name</label><input id="cName" placeholder="किसान/ग्राहक का नाम">
+  <label>Mobile Number</label><input id="cPhone" placeholder="मोबाइल नंबर">
+  <label>Transaction Type</label>
+  <select id="cType"><option value="Debit">उधार (Debit - लेने वाला)</option><option value="Credit">भुगतान (Credit - जमा)</option></select>
+  <label>Amount ₹</label><input id="cAmount" type="number" step=".01" placeholder="रुपये">
+  <label>Description / Bill Details</label><input id="cDesc" placeholder="विवरण जैसे: धान की दवा बिल #12">
+  <div class="row" style="margin-top:16px">
+    <button onclick="saveCustomerTxn()">Save Transaction</button>
+    <button class="secondary" onclick="$('customerModal').classList.remove('open')">Cancel</button>
+  </div>
+</div>
+</div>
+
+<!-- Note Modal -->
+<div class="modal" id="noteModal">
+<div class="dialog">
+  <h2>Add New Note</h2>
+  <label>Note Category</label>
+  <select id="nCat"><option value="Personal">Personal Note</option><option value="Product">Product Note</option><option value="Customer">Customer Note</option></select>
+  <label>Title / Subject</label><input id="nTitle" placeholder="विषय या शीर्षक">
+  <label>Note Details</label><textarea id="nBody" rows="4" placeholder="यहाँ विस्तार से लिखें..."></textarea>
+  <div class="row" style="margin-top:16px">
+    <button onclick="saveNote()">Save Note</button>
+    <button class="secondary" onclick="$('noteModal').classList.remove('open')">Cancel</button>
+  </div>
+</div>
+</div>
+
+<!-- Detail View Modal -->
+<div class="modal" id="detailModal"><div class="dialog" id="detailContent"></div></div>
+
+<script src="assets/js/app.js"></script>
+</body>
+</html>
